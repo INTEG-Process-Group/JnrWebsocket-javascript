@@ -9,22 +9,47 @@
 
 <body>
 
+    <!-- the connection status -->
     <pre id="status">&nbsp;</pre>
 
+    <!-- buttons to control the connection -->
     <button id="connect-button" onclick="connect_button_click()">Connect</button>
     <button id="close-button" onclick="close_button_click()" disabled="disabled">Close</button>
 
 
+    <!-- the javascript -->
     <script>
 
         const connect_button = document.getElementById('connect-button');
         const close_button = document.getElementById('close-button');
 
+        // gets called to update the status element with text and a new color
         function updateStatus(text, color) {
             var statusElement = document.getElementById('status');
             statusElement.innerText = text;
             statusElement.style.color = color;
         }
+
+
+        // gets called when the user clicks the connect button
+        function connect_button_click() {
+            updateStatus(`Connecting to ${ip}...`, 'black');
+            jnrwebsocket.connect('ws://' + ip);
+
+            // we are connecting, disable the connect button
+            connect_button.disabled = true;
+        }
+
+
+        // gets called when the user clicks the close button
+        function close_button_click() {
+            updateStatus(`Closing...`, 'black');
+            jnrwebsocket.close();
+
+            // we are disconnecting, disable the close button
+            close_button.disabled = true;
+        }
+
 
 
 
@@ -60,26 +85,6 @@
         jnrwebsocket.onError = (error) => {
             updateStatus(`websocket connection has thrown an error: ${error}`, 'red');
         };
-
-
-        // gets called when the user clicks the connect button
-        function connect_button_click() {
-            updateStatus(`Connecting to ${ip}...`, 'black');
-            jnrwebsocket.connect('ws://' + ip);
-
-            // we are connecting, disable the connect button
-            connect_button.disabled = true;
-        }
-
-
-        // gets called when the user clicks the close button
-        function close_button_click() {
-            updateStatus(`Closing...`, 'black');
-            jnrwebsocket.close();
-
-            // we are disconnecting, disable the close button
-            close_button.disabled = true;
-        }
 
     </script>
 
