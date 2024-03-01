@@ -1,0 +1,101 @@
+<html>
+
+<head>
+    <script src="integ/comm.js"></script>
+    <script src="integ/md5.js"></script>
+    <script src="integ/base64.js"></script>
+    <script src="integ/jnrWebsocket.js"></script>
+
+    <script>
+        // our websocket object
+        var jnrwebsocket = new JnrWebsocket();
+
+        // used to specify a unit.  the 'ws://IP_ADDRESS' can be removed if this file is uploaded 
+        // to a jnior.
+        jnrwebsocket.connect('ws://10.0.0.155');
+
+        // shows the messaging in the developer tools console
+        jnrwebsocket.enableCommLogging();
+
+        // ads a callback that will get alerted of io changes by way of the monitor packet
+        jnrwebsocket.addOnMonitorListener(function (monitorJson) {
+            console.log(JSON.stringify(monitorJson, null, 2));
+
+            // get the io-table element and check if there have been rows added.  if there are 
+            // not any rows then we need to build the table for the first time.
+            var ioTableElement = document.getElementById('io-table');
+            if (0 == ioTableElement.rows.length) {
+                buildIoTable(monitorJson.Model);
+            }
+
+            // get the inputs and assign the state to the table cell
+            var inputs = monitorJson.Inputs;
+            for (var i = 0; i < inputs.length; i++) {
+                var inputStateCellElement = document.getElementById('input-' + (i + 1));
+                inputStateCellElement.innerHTML = inputs[i].State == 1 ? "ON" : "OFF";
+            };
+
+            // get the outputs and assign the state to the table cell
+            var outputs = monitorJson.Outputs;
+            for (var i = 0; i < outputs.length; i++) {
+                var outputStateCellElement = document.getElementById('output-' + (i + 1));
+                outputStateCellElement.innerHTML = outputs[i].State == 1 ? "ON" : "OFF";
+            };
+        });
+
+
+        // builds the table for the io according to the model number
+        function buildIoTable(model) {
+            var ioTbodyElement = document.getElementById('io-table');
+            for (var i = 1; i <= 12; i++) {
+                var tr = document.createElement('tr');
+
+                var inputTd = document.createElement('td');
+                if (model == "414" ||
+                    (model == "410" && i <= 8) ||
+                    (model == "412" && i <= 4)) {
+                    inputTd.innerHTML = 'Input ' + i;
+                }
+                tr.append(inputTd);
+
+                var inputTd = document.createElement('td');
+                inputTd.setAttribute('id', 'input-' + i);
+                tr.append(inputTd);
+
+                var outputTd = document.createElement('td');
+                if (model == "412" ||
+                    (model == "410" && i <= 8) ||
+                    (model == "414" && i <= 4)) {
+                    outputTd.innerHTML = 'Output ' + i;
+                }
+                tr.append(outputTd);
+
+                var outputTd = document.createElement('td');
+                outputTd.setAttribute('id', 'output-' + i);
+                tr.append(outputTd);
+
+                var outputTd = document.createElement('td');
+                if (model == "412" ||
+                    (model == "410" && i <= 8) ||
+                    (model == "414" && i <= 4)) {
+                    outputTd.innerHTML = '<button onclick="jnrwebsocket.toggleOutput(' + i + ');">Toggle</button>';
+                }
+                tr.append(outputTd);
+
+                ioTbodyElement.append(tr);
+            }
+        }
+    </script>
+</head>
+
+
+<body style="background: #2E394D; color:white;">
+    <div><img src="charter-spectrum-logo.png" style="width: 400px;"></div>
+
+    <table>
+        <tbody id="io-table">
+        </tbody>
+    </table>
+</body>
+
+</html>

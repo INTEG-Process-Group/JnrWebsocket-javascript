@@ -1,0 +1,50 @@
+<html>
+
+<head>
+    <script src="integ/comm.js"></script>
+    <script src="integ/md5.js"></script>
+    <script src="integ/base64.js"></script>
+    <script src="integ/jnrWebsocket.js"></script>
+
+    <script>
+        var jnrwebsocket = new JnrWebsocket();
+        jnrwebsocket.connect('ws://10.0.0.155');
+        jnrwebsocket.addOnLoggedInListener(async function onLoggedIn() {
+
+            /** Below is an example of an Async function called readFileAsync that blocks and
+            waits to execute until the file has been read. The parameter for this function is
+            the file you wish to read. The value returned is the contents of the file. This
+            example displays the file contents of the jnior.ini. */
+            var fileContents = await jnrwebsocket.readFileAsync('/flash/jnior.ini');
+            console.log('file contents: ' + fileContents);
+
+            /** Below is an example of using a callback function called readFile that gets executed 
+            when the file has been read from the jnior. The parameter for this function is the file
+            you wish to read. The value returned is an object containing data on the file being read.
+            This example reads the file contents of the jnior.ini file.*/
+            jnrwebsocket.readFile('/flash/jnior.ini', function (asyncContents) {
+                console.log('file read result: ' + JSON.stringify(asyncContents, null, 4));
+            });
+
+            /** Below is an example of an Async function called writeFileAsync that blocks and
+            waits to execute until the file has been created. The parameters for this function are
+            the file you wish to create and what is inside the file. The value returned is a boolean
+            on if the value was successfully created. This example creates a file called junk.txt and
+            the file contains the text hello */
+            var result = await jnrwebsocket.writeFileAsync('/junk.txt', "hello");
+            console.log('file write result: ' + result);
+
+            /** Below is an example of using a callback function called writeFile that gets executed when
+            the file is created on the JNIOR. The parameters for this function are the file you wish
+            to create and what is inside the file. The value returned is an object containing data on
+            the newly created file. This example creates a file called junkextra.txt containing the text
+            'hello again'. */
+            jnrwebsocket.writeFile('/junkextrab.txt', "hello again", function (resultExtra) {
+                console.log('file write result: ' + JSON.stringify(resultExtra, null, 4));
+            });
+        });
+
+    </script>
+</head>
+
+</html>

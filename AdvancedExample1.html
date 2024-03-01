@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="integ/base64.js" type="text/javascript"></script>
+    <script src="integ/comm.js" type="text/javascript"></script>
+    <script src="integ/jnrWebsocket.js" type="text/javascript"></script>
+    <script src="integ/md5.js" type="text/javascript"></script>
+</head>
+
+<script>
+    var jnrwebsocket = new JnrWebsocket();
+    jnrwebsocket.connect('ws://10.0.0.155');
+
+    jnrwebsocket.addOnLoggedInListener(async function onLoggedIn() {
+        var fileNames = [];
+        var folderContentArray = await jnrwebsocket.getFileListingAsync("/");
+        console.log('async file listing result: ' + JSON.stringify(folderContentArray));
+        var i;
+        for (i = 0; i < folderContentArray.length; i++) {
+            fileNames[i] = folderContentArray[i]["Name"];
+        }
+            fileNames.forEach(element => {
+                if (element.endsWith('/') == false) {
+                let btn = document.createElement('button');
+                btn.innerHTML = element;
+                btn.addEventListener("click", function(e) {
+                    readAFile("/" + element);
+                });
+                document.body.appendChild(btn);
+                }
+            });
+    });
+    readAFile = async function (filename) {
+        var fileContents = await jnrwebsocket.readFileAsync(filename);
+        document.write(fileContents);
+        console.log(fileContents);
+    };
+</script>
+
+<body>
+</body>
+
+</html>

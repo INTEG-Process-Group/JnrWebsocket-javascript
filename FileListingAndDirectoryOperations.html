@@ -1,0 +1,48 @@
+<html>
+
+<head>
+    <script src="integ/comm.js"></script>
+    <script src="integ/md5.js"></script>
+    <script src="integ/base64.js"></script>
+    <script src="integ/jnrWebsocket.js"></script>
+
+    <script>
+        var jnrwebsocket = new JnrWebsocket();
+        jnrwebsocket.connect('ws://10.0.0.155');
+        // jnrwebsocket.enableCommLogging();
+        jnrwebsocket.addOnLoggedInListener(async function () {
+
+            /**
+             * Below is an example of an Async function called getFileListingAsync that blocks and
+             * waits to execute until the files in the directory have been returned. The parameter 
+             * for this function is the directory that contains the files you wish to see. The 
+             * value returned is an array of objects that contain information about each file 
+             * inside that directory.  This example displays the files under the flash directory
+             */
+            var folderContentArray = await jnrwebsocket.getFileListingAsync("flash/");
+            console.log('async file listing result: ' + JSON.stringify(folderContentArray));
+
+            /**
+             * Below is an example of using a callback called getFileListing that gets executed 
+             * when the directory listing on the JNIOR is read. The parameter for this function 
+             * is the directory that contains the files you wish to see. The value returned is an 
+             * array of objects that contain information about each file inside that directory. 
+             * This example displays the files under the flash directory
+             */
+            jnrwebsocket.getFileListing("flash/", function (listing) {
+                console.log('file listing result: ' + JSON.stringify(listing));
+            });
+
+            /** Below is an example of using a callback function called mkDir that gets executed when the
+            directory listing on the JNIOR is created. The parameter for this function is the directory 
+            name that you with to create. The value returned is an object containing data on the new 
+            directory that was created. This example creates a new directory on the JNIOR called testing */
+            jnrwebsocket.mkDir("/testing", function (directory) {
+                console.log('new directory listing is ' + JSON.stringify(directory, null, 4));
+            });
+
+        });
+    </script>
+</head>
+
+</html>

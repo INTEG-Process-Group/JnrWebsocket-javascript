@@ -1,0 +1,78 @@
+<html>
+
+<head>
+    <script src="integ/comm.js"></script>
+    <script src="integ/md5.js"></script>
+    <script src="integ/base64.js"></script>
+    <script src="integ/jnrWebsocket.js"></script>
+
+    <script>
+        var jnrwebsocket = new JnrWebsocket();
+        jnrwebsocket.connect('ws://10.0.0.155');
+        jnrwebsocket.enableCommLogging();
+        jnrwebsocket.addOnLoggedInListener(function () {
+
+            /** Below is an example of using a callback function called readRegistryKey that gets
+            executed when the result of the registry is read from the JNIOR. The parameter for this
+            function is the name of the registry key you wish to read. The value returned is the
+            value of the registry key. This example reads the registry key $SerialNumber from the
+            JNIOR. */
+            jnrwebsocket.readRegistryKey('$SerialNumber', function (keyName, value) {
+                var serialNumber = value;
+                console.log(serialNumber);
+            });
+
+            /** Below is an example of using a callback function called readRegistryKeys that gets
+            executed when the result of mulitple registry keys are read from the JNIOR. The parameter
+            for this function is and array of registry keys you wish to read. The values returned are
+            the values of the registry keys. This example reads the registry keys $SerialNumber,
+            $Model, and $BootTime from the JNIOR. */
+            var registryKeys = ['$SerialNumber', '$Model', '$BootTime'];
+            jnrwebsocket.readRegistryKeys(registryKeys, function (keys) {
+                console.log(keys['$serialnumber']);
+                console.log(keys['$model']);
+                console.log(keys['$boottime']);
+            });
+
+            /** Below is an example of using a function called registryWrite that writes
+            a value to the specified registry key. The parameters for this function are the 
+            registry key getting written to and the value being written. The values returned are the values of
+            the registry keys. This example writes the value hostname to the hostname registry
+            key for the JNIOR, changing then name of the JNIOR to hostname. */
+            jnrwebsocket.registryWrite('IpConfig/Hostname', 'hostname', function (key , value) {
+                console.log('Hostname is now ' + value);
+            });
+
+            /** Below is an example of using a function called subscribeRegistryKey that monitors
+            the value of the specified registry key. The parameter for this function is the 
+            registry key being monitored. The values returned are the values of the registry keys. 
+            This example writes the value hostname to the hostname registry key for the JNIOR,
+            changing then name of the JNIOR to hostname. */
+            jnrwebsocket.subscribeRegistryKey('IpConfig/Hostname', function (key, value) {
+                console.log('Hostname Updated and is now ' + value)
+            });
+
+            /** Below is an example of using a function called getRegistryListing that reads the 
+            registry keys of the specified registry directory. The parameters for this function are the 
+            registry directory getting read. The values returned are the values of the registry keys.
+            This example writes the value 90000 to the timeout registry key for the Modbus Application. */
+            var appdatalisting = jnrwebsocket.getRegistryListing('AppData', function (folderName, keys) {
+                console.log(folderName + ' listing is ' + JSON.stringify(keys, null, 4));
+            });
+
+            /** Below is an example of using a Async function called readRegistryKeyAsync that blocks
+            and waits to execute until the result of mulitple registry keys are read from the JNIOR. 
+            The parameter for this function is and array of registry keys you wish to read. The values
+            returned are the values of the registry keys. This example reads the registry keys 
+            $SerialNumber, $Model, and $BootTime from the JNIOR. */
+            (async function () {
+                console.log('serial: ' + await jnrwebsocket.readRegistryKeyAsync('$SerialNumber'));
+                console.log('model: ' + await jnrwebsocket.readRegistryKeyAsync('$Model'));
+                console.log('boot time: ' + await jnrwebsocket.readRegistryKeyAsync('$BootTime'));
+            });
+
+        });
+    </script>
+</head>
+
+</html>

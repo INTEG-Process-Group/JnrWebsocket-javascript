@@ -1,0 +1,49 @@
+<html>
+
+<head>
+    <script src="comm.js"></script>
+    <script src="md5.js"></script>
+    <script src="base64.js"></script>
+    <script src="jnrWebsocket.js"></script>
+
+    <style>
+        html {
+            background-color: #fafafa;
+        }
+
+        #console-log {
+            line-height: 1.5;
+        }
+    </style>
+</head>
+
+<body>
+
+    <pre id="status" style="background: #fafafa; padding: 12px; position: fixed; right: 0; top: 0;">Connecting...</pre>
+
+    <pre id="console-log"></pre>
+
+    <script language="javascript">
+        var start_time = new Date();
+        var originalConsole = console.log;
+        var consoleLogElement = document.getElementById('console-log');
+
+        console.log = function () {
+            var message = [].join.call(arguments, " ");
+            let timeDelta = new Date() - start_time;
+            let timeDeltaSeconds = timeDelta / 1000;
+
+            // in my testing, appending to innerHTML is much faster than appending to innerText, 
+            // almost 2x.  Appending to innerHTML is ~1.5x faster then appening textNodes.
+            consoleLogElement.innerHTML += `[${timeDeltaSeconds.toFixed(3)}] ${message}\r\n`;
+            // window.scrollTo(0, document.body.scrollHeight);
+
+            originalConsole.apply(console, [`[${timeDeltaSeconds.toFixed(3)}] ${message}\r\n`]);  // arguments);
+        };
+    </script>
+
+    <script src="test.js"></script>
+
+</body>
+
+</html>

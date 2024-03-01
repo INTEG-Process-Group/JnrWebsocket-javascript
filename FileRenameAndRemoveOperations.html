@@ -1,0 +1,59 @@
+<html>
+
+<head>
+    <script src="integ/comm.js"></script>
+    <script src="integ/md5.js"></script>
+    <script src="integ/base64.js"></script>
+    <script src="integ/jnrWebsocket.js"></script>
+
+    <script>
+        var jnrwebsocket = new JnrWebsocket();
+        jnrwebsocket.connect('ws://10.0.0.155');
+        jnrwebsocket.addOnLoggedInListener(async function () {
+
+            /** Below are two examples of an Async function called renameFileAsync that blocks and
+            waits to execute until the files have been renamed on the JNIOR. The parameters for 
+            this function are the current file name and the name you want the file to be renamed to.
+            The value returned is a boolean that represents weather the rename was successful or not.
+            These examples rename junktest.txt to junknamechangeasync.txt and junk.txt to 
+            junknamechange.txt if those files exist on the JNIOR */
+            var asyncRename = await jnrwebsocket.renameFileAsync("/junktest.txt", "/junknamechangeasync.txt");
+            console.log('async file name changed: ' + asyncRename);
+
+            /**Below is an example of using a callback function called renameFile that gets executed when
+            the result of the rename is returned from the JNIOR. The parameters for this function are the
+            current file name and the name you want the file to be renamed to. The value returned is a
+            boolean that represents weather the rename was successful or not. This example renames junktest.txt to
+            junknamechangealso.txt if that file exist on the JNIOR.*/
+            jnrwebsocket.renameFile("/junkextra.txt", "/junknamechangealso.txt", function (fileRenameJson) {
+                console.log('file name changed: ' + JSON.stringify(fileRenameJson, null, 4));
+            });
+
+            /**Below is an example of using a callback function called removeFile that gets executed when
+            the targeted file is removed from the JNIOR.  The parameters for this function is the current
+            file name to be removed. The value returned is the name of the file that has been removed. This
+            example would delete a file called junk.txt from the JNIOR if it exists.*/
+            jnrwebsocket.removeFile('/junk1.txt', function (remove) {
+                console.log('file that should be removed is ' + remove);
+            });
+
+            /**Below is an example of using a callback function called removeFiles that gets executed when
+            the targeted files are removed from the JNIOR. The parameters for this function are the current
+            file names to be removed. The value returned is the name of the files that have been removed. 
+            This example would delete two files called junk2.txt and junk3.txt from the JNIOR 
+            if they exist.*/
+            jnrwebsocket.removeFiles(['/junk2.txt', '/junk3.txt'], function (removeAll) {
+                console.log('files that should be removed is ' + removeAll);
+            });
+
+        });
+    </script>
+</head>
+
+<body>
+
+
+
+</body>
+
+</html>
