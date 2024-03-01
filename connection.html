@@ -31,22 +31,20 @@
         }
 
 
-        // gets called when the user clicks the connect button
+        // gets called when the user clicks the connect button.  we should disable the connect 
+        // button so the user cant press it again until the connection is closed
         function connect_button_click() {
             updateStatus(`Connecting to ${ip}...`, 'black');
             jnrwebsocket.connect('ws://' + ip);
-
-            // we are connecting, disable the connect button
             connect_button.disabled = true;
         }
 
 
-        // gets called when the user clicks the close button
+        // gets called when the user clicks the close button.  we should disable the close 
+        // button so the user cant press it again until the connection is opened
         function close_button_click() {
             updateStatus(`Closing...`, 'black');
             jnrwebsocket.close();
-
-            // we are disconnecting, disable the close button
             close_button.disabled = true;
         }
 
