@@ -11,7 +11,15 @@
 
     <pre id="status">&nbsp;</pre>
 
+    <button id="connect-button" onclick="connect_button_click()">Connect</button>
+    <button id="close-button" onclick="close_button_click()" disabled="disabled">Close</button>
+
+
     <script>
+
+        const connect_button = document.getElementById('connect-button');
+        const close_button = document.getElementById('close-button');
+
         function updateStatus(text, color) {
             var statusElement = document.getElementById('status');
             statusElement.innerText = text;
@@ -31,22 +39,22 @@
         // define our websocket object
         var jnrwebsocket = new JnrWebsocket();
 
-        //
-        // a flag that knows if we are connected
-        var _connected = false;
-
 
         //
         // add a couple connection listeners for our jnrWebsocket object.  when these listeners 
         // are called we will update our status element
         jnrwebsocket.addEventListener('onOpened', () => {
             updateStatus('Connected!', 'green');
-            _connected = true;
+
+            // we are connected, enable the close button
+            close_button.disabled = false;
         });
 
         jnrwebsocket.addEventListener('onClosed', () => {
             updateStatus('Closed!', 'red');
-            _connected = false;
+
+            // we are disconnected, enable the connect button
+            connect_button.disabled = false;
         });
 
         jnrwebsocket.onError = (error) => {
@@ -56,36 +64,27 @@
 
         // gets called when the user clicks the connect button
         function connect_button_click() {
-            //
-            // check to see if we are connected and if we are then close the connection
-            if (_connected) {
-                updateStatus(`WebScoket is already connected!`, 'red');
-            } else {
-                updateStatus(`Connecting to ${ip}...`, 'black');
-                jnrwebsocket.connect('ws://' + ip);
-            }
+            updateStatus(`Connecting to ${ip}...`, 'black');
+            jnrwebsocket.connect('ws://' + ip);
+
+            // we are connecting, disable the connect button
+            connect_button.disabled = true;
         }
 
 
         // gets called when the user clicks the close button
         function close_button_click() {
-            //
-            // check to see if we are connected and if we are then close the connection
-            if (_connected) {
-                updateStatus(`Closing...`, 'black');
-                jnrwebsocket.close();
-            } else {
-                updateStatus(`WebSocket is not open`, 'red');
-            }
+            updateStatus(`Closing...`, 'black');
+            jnrwebsocket.close();
+
+            // we are disconnecting, disable the close button
+            close_button.disabled = true;
         }
 
     </script>
 
 
-    <button onclick="connect_button_click()">Connect</button>
-    <button onclick="close_button_click()">Close</button>
-
-    <script src="test.js"></script>
+    <!-- <script src="test.js"></script> -->
 
 </body>
 
