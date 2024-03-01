@@ -62,34 +62,31 @@
 
         //
         // define our websocket object
-        var jnrwebsocket = new JnrWebsocket();
+        const jnrwebsocket = new JnrWebsocket();
 
 
         //
-        // add a couple connection listeners for our jnrWebsocket object.  when these listeners 
-        // are called we will update our status element
+        // add a listener that gets called when the connection is opened.  once the connection is 
+        // opened we will enable the close button
         jnrwebsocket.addEventListener('onOpened', () => {
             updateStatus('Connected!', 'green');
-
-            // we are connected, enable the close button
             close_button.disabled = false;
         });
 
+        //
+        // add a listener that gets called when the connection gets closed.  once the connection 
+        // is closed then we can re-enable the connect button
         jnrwebsocket.addEventListener('onClosed', () => {
             updateStatus('Closed!', 'red');
-
-            // we are disconnected, enable the connect button
             connect_button.disabled = false;
         });
 
+        // add a listener that will be raised if there is an error with the websocket connection
         jnrwebsocket.onError = (error) => {
             updateStatus(`websocket connection has thrown an error: ${error}`, 'red');
         };
 
     </script>
-
-
-    <!-- <script src="test.js"></script> -->
 
 </body>
 
